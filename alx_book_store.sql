@@ -1,3 +1,4 @@
+CREATE DATABASE IF NOT EXISTS alx_book_store
 CREATE TABLE IF NOT EXISTS Authors (
     author_id INTEGER PRIMARY KEY,
     author_name VARCHAR(215) NOT NULL
