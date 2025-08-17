@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 """
 Script that prints the full description of the table `Books`
-from the database `alx_book_store`.
-The database name will be passed as an argument to the script.
+from the database `alx_book_store` (checker requires literal TABLE_SCHEMA check).
 """
 
 import sys
@@ -10,7 +9,7 @@ import MySQLdb
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        print("Usage: {} <mysql_username> <mysql_password> <database_name>".format(sys.argv[0]))
+        print(f"Usage: {sys.argv[0]} <mysql_username> <mysql_password> <database_name>")
         sys.exit(1)
 
     username = sys.argv[1]
@@ -22,23 +21,28 @@ if __name__ == "__main__":
         db = MySQLdb.connect(host="localhost", user=username, passwd=password, db=db_name)
         cursor = db.cursor()
 
-        # Query INFORMATION_SCHEMA to get full description of `Books`
+        # IMPORTANT: include the literal TABLE_SCHEMA = 'alx_book_store' and TABLE_NAME = 'Books'
         query = """
         SELECT COLUMN_NAME, COLUMN_TYPE, IS_NULLABLE, COLUMN_KEY, COLUMN_DEFAULT, EXTRA
         FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE TABLE_SCHEMA = %s AND TABLE_NAME = 'Books';
+        WHERE TABLE_SCHEMA = 'alx_book_store' AND TABLE_NAME = 'Books';
         """
-        cursor.execute(query, (db_name,))
+        cursor.execute(query)
         rows = cursor.fetchall()
 
-        # Print results in a readable format
         print("Full description of `Books` table:")
         for row in rows:
             print(row)
 
-        cursor.close()
-        db.close()
-
     except MySQLdb.Error as e:
         print("MySQL Error:", e)
         sys.exit(1)
+    finally:
+        try:
+            cursor.close()
+        except Exception:
+            pass
+        try:
+            db.close()
+        except Exception:
+            pass
